@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>מחשבון פיננסי Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Assistant', sans-serif; -webkit-tap-highlight-color: transparent; }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .solve-btn { transition: all 0.2s ease; }
+        .solve-btn:active { transform: scale(0.95); }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen pb-10">
+
+    <div class="bg-slate-900 text-white p-8 text-center shadow-lg mb-6">
+        <h1 class="text-3xl font-extrabold tracking-tight">מחשבון פיננסי <span class="text-blue-400">PRO</span></h1>
+        <p class="text-slate-400 mt-2 text-sm uppercase tracking-widest">Time Value of Money & IRR</p>
+    </div>
+
+    <div class="max-w-md mx-auto px-4">
+        <div class="bg-white rounded-3xl shadow-xl p-6 md:p-8 space-y-5 border border-slate-100">
+            
+            <div class="relative">
+                <label class="block text-xs font-bold text-slate-500 mb-1 mr-1">מספר תקופות (N)</label>
+                <div class="flex gap-2">
+                    <input id="n" type="number" inputmode="decimal" placeholder="0" class="w-full bg-slate-50 border-none rounded-2xl p-4 focus:ring-2 focus:ring-blue-500 outline-none text-lg font-semibold transition">
+                    <button onclick="calculate('n')" class="solve-btn bg-blue-600 hover:bg-blue-700 text-white w-14 rounded-2xl flex items-center justify-center shadow-md">🔍</button>
+                </div>
+            </div>
+
+            <div class="relative">
+                <label class="block text-xs font-bold text-slate-500 mb-1 mr-1">ריבית תקופתית (%)</label>
+                <div class="flex gap-2">
+                    <input id="i" type="number" inputmode="decimal" placeholder="0.00" class="w-full bg-slate-50 border-none rounded-2xl p-4 focus:ring-2 focus:ring-blue-500 outline-none text-lg font-semibold transition">
+                    <button onclick="calculate('i')" class="solve-btn bg-blue-600 hover:bg-blue-700 text-white w-14 rounded-2xl flex items-center justify-center shadow-md">🔍</button>
+                </div>
+            </div>
+
+            <div class="relative">
+                <label class="block text-xs font-bold text-slate-500 mb-1 mr-1">ערך נוכחי (PV)</label>
+                <div class="flex gap-2">
+                    <input id="pv" type="number" inputmode="decimal" placeholder="0" class="w-full bg-slate-50 border-none rounded-2xl p-4 focus:ring-2 focus:ring-blue-500 outline-none text-lg font-semibold transition text-emerald-600">
+                    <button onclick="calculate('pv')" class="solve-btn bg-blue-600 hover:bg-blue-700 text-white w-14 rounded-2xl flex items-center justify-center shadow-md">🔍</button>
+                </div>
+            </div>
+
+            <div class="relative">
+                <label class="block text-xs font-bold text-slate-500 mb-1 mr-1">תשלום תקופתי (PMT)</label>
+                <div class="flex gap-2">
+                    <input id="pmt" type="number" inputmode="decimal" placeholder="0" class="w-full bg-slate-50 border-none rounded-2xl p-4 focus:ring-2 focus:ring-blue-500 outline-none text-lg font-semibold transition">
+                    <button onclick="calculate('pmt')" class="solve-btn bg-blue-600 hover:bg-blue-700 text-white w-14 rounded-2xl flex items-center justify-center shadow-md">🔍</button>
+                </div>
+            </div>
+
+            <div class="relative">
+                <label class="block text-xs font-bold text-slate-500 mb-1 mr-1">ערך עתידי (FV)</label>
+                <div class="flex gap-2">
+                    <input id="fv" type="number" inputmode="decimal" placeholder="0" class="w-full bg-slate-50 border-none rounded-2xl p-4 focus:ring-2 focus:ring-blue-500 outline-none text-lg font-semibold transition text-blue-600">
+                    <button onclick="calculate('fv')" class="solve-btn bg-blue-600 hover:bg-blue-700 text-white w-14 rounded-2xl flex items-center justify-center shadow-md">🔍</button>
+                </div>
+            </div>
+
+            <div class="pt-4 space-y-3">
+                <button onclick="clearFields()" class="w-full py-3 text-slate-400 font-bold hover:text-red-500 transition text-sm tracking-widest uppercase">איפוס נתונים</button>
+            </div>
+        </div>
+
+        <div class="mt-6 text-center text-slate-400 text-xs px-6 leading-relaxed">
+            * לחישוב IRR (ריבית): וודא שהזנת N, PV, PMT ו-FV. <br>זכור: השקעה היא בסימן שלילי (-), תקבול בסימן חיובי (+).
+        </div>
+    </div>
+
+    <script>
+        function calculate(target) {
+            const n = parseFloat(document.getElementById('n').value);
+            const i_val = parseFloat(document.getElementById('i').value);
+            const i = i_val / 100;
+            const pv = parseFloat(document.getElementById('pv').value) || 0;
+            const pmt = parseFloat(document.getElementById('pmt').value) || 0;
+            const fv = parseFloat(document.getElementById('fv').value) || 0;
+
+            try {
+                if (target === 'fv') {
+                    let result = - (pv * Math.pow(1 + i, n) + pmt * (Math.pow(1 + i, n) - 1) / i);
+                    if (i === 0) result = -(pv + pmt * n);
+                    document.getElementById('fv').value = result.toFixed(2);
+                } 
+                else if (target === 'pv') {
+                    let result = - (fv / Math.pow(1 + i, n) + pmt * (1 - Math.pow(1 + i, -n)) / i);
+                    if (i === 0) result = -(fv + pmt * n);
+                    document.getElementById('pv').value = result.toFixed(2);
+                }
+                else if (target === 'pmt') {
+                    let result = - (fv + pv * Math.pow(1 + i, n)) / ((Math.pow(1 + i, n) - 1) / i);
+                    if (i === 0) result = -(fv + pv) / n;
+                    document.getElementById('pmt').value = result.toFixed(2);
+                }
+                else if (target === 'n') {
+                    let result = Math.log((pmt - fv * i) / (pmt + pv * i)) / Math.log(1 + i);
+                    document.getElementById('n').value = result.toFixed(2);
+                }
+                else if (target === 'i') {
+                    const irr = calculateIRR(n, pv, pmt, fv);
+                    document.getElementById('i').value = (irr * 100).toFixed(4);
+                }
+            } catch (e) {
+                alert("שגיאה בחישוב. וודא שכל הנתונים תקינים.");
+            }
+        }
+
+        // פונקציית ניוטון-רפסון למציאת IRR
+        function calculateIRR(n, pv, pmt, fv) {
+            let r = 0.1; // ניחוש התחלתי (10%)
+            for (let j = 0; j < 100; j++) {
+                let r1 = r + 0.00001;
+                let f_r = pv * Math.pow(1+r, n) + pmt * (Math.pow(1+r, n) - 1) / r + fv;
+                let f_r1 = pv * Math.pow(1+r1, n) + pmt * (Math.pow(1+r1, n) - 1) / r1 + fv;
+                let derivative = (f_r1 - f_r) / 0.00001;
+                let next_r = r - f_r / derivative;
+                if (Math.abs(next_r - r) < 0.000001) return next_r;
+                r = next_r;
+            }
+            return r;
+        }
+
+        function clearFields() {
+            ['n','i','pv','pmt','fv'].forEach(id => document.getElementById(id).value = '');
+        }
+    </script>
+</body>
+</html>
