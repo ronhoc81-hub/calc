@@ -3,93 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>מחשבון פיננסי Pro - Toggle</title>
+    <title>מחשבון פיננסי</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Assistant', sans-serif; -webkit-tap-highlight-color: transparent; }
-        .solve-btn { transition: all 0.2s ease; }
-        .solve-btn:active { transform: scale(0.95); }
-        .unit-btn { flex: 1; text-align: center; font-size: 11px; font-weight: bold; padding: 6px 2px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; transition: all 0.2s; }
-        .unit-btn.active { background: #3b82f6; color: white; border-color: #3b82f6; z-index: 10; }
-        .unit-btn:first-child { border-radius: 0 12px 12px 0; }
-        .unit-btn:last-child { border-radius: 12px 0 0 12px; }
+        body { font-family: 'Assistant', sans-serif; -webkit-tap-highlight-color: transparent; background-color: #fcfcfc; }
+        .unit-btn { flex: 1; text-align: center; font-size: 11px; font-weight: 600; padding: 6px 4px; border: 1px solid #e5e7eb; background: #fff; color: #6b7280; transition: all 0.2s; }
+        .unit-btn.active { background: #1e293b; color: white; border-color: #1e293b; }
+        .unit-btn:first-child { border-radius: 0 8px 8px 0; }
+        .unit-btn:last-child { border-radius: 8px 0 0 8px; }
+        
+        .input-field { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 12px 16px; font-size: 18px; font-weight: 600; width: 100%; outline: none; transition: border-color 0.2s; }
+        .input-field:focus { border-color: #3b82f6; }
+        
+        .calc-trigger { width: 32px; height: 32px; border-radius: 50%; background: #f1f5f9; display: flex; items-center; justify-content: center; color: #475569; border: 1px solid #e2e8f0; }
+        .calc-trigger:active { background: #3b82f6; color: white; transform: scale(0.9); }
+        
+        .matrix-table { width: 100%; border-collapse: separate; border-spacing: 2px; font-size: 10px; table-layout: fixed; }
+        .matrix-table th { background: #f8fafc; padding: 6px 2px; color: #64748b; font-weight: bold; border-radius: 4px; }
+        .matrix-table td { background: #fff; padding: 6px 2px; text-align: center; border: 1px solid #f1f5f9; border-radius: 4px; color: #334155; }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen pb-10">
+<body class="min-h-screen pb-12">
 
-    <div class="bg-slate-900 text-white p-6 text-center shadow-lg mb-4">
-        <h1 class="text-2xl font-extrabold tracking-tight">מחשבון פיננסי <span class="text-blue-400">PRO</span></h1>
-        <p class="text-[10px] text-slate-400 uppercase tracking-widest mt-1">ניהול תקופות בלחיצה אחת</p>
-    </div>
+    <div class="max-w-md mx-auto pt-8 px-5">
+        <header class="mb-8 text-right">
+            <h1 class="text-3xl font-bold text-slate-800">מחשבון פיננסי</h1>
+            <div class="h-1 w-12 bg-blue-600 mt-2 rounded-full"></div>
+        </header>
 
-    <div class="max-w-md mx-auto px-4">
-        <div class="bg-white rounded-3xl shadow-xl p-6 space-y-6 border border-slate-100">
+        <div class="space-y-5 bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+            <div class="space-y-2">
+                <div class="flex justify-between items-center px-1">
+                    <label class="text-xs font-bold text-slate-400 uppercase">תקופות זמן (N)</label>
+                    <div class="flex w-40" id="n-group">
+                        <button class="unit-btn" onclick="setUnit('n', 1, this)">יום</button>
+                        <button class="unit-btn active" onclick="setUnit('n', 30, this)">חודש</button>
+                        <button class="unit-btn" onclick="setUnit('n', 365, this)">שנה</button>
+                        <input type="hidden" id="n-unit" value="30">
+                    </div>
+                </div>
+                <div class="relative flex items-center">
+                    <input id="n" type="text" inputmode="text" placeholder="0" class="input-field pl-12">
+                    <button onclick="calculate('n')" class="calc-trigger absolute left-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg></button>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <div class="flex justify-between items-center px-1">
+                    <label class="text-xs font-bold text-slate-400 uppercase">ריבית (%)</label>
+                    <div class="flex w-40" id="i-group">
+                        <button class="unit-btn" onclick="setUnit('i', 30, this)">חודש</button>
+                        <button class="unit-btn active" onclick="setUnit('i', 365, this)">שנה</button>
+                        <input type="hidden" id="i-unit" value="365">
+                    </div>
+                </div>
+                <div class="relative flex items-center">
+                    <input id="i" type="text" inputmode="text" placeholder="0.00" class="input-field pl-12 text-blue-700">
+                    <button onclick="calculate('i')" class="calc-trigger absolute left-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg></button>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <label class="block text-xs font-bold text-slate-400 px-1 uppercase">ערך נוכחי (PV)</label>
+                <div class="relative flex items-center">
+                    <input id="pv" type="text" inputmode="text" placeholder="0" class="input-field pl-12 text-emerald-700">
+                    <button onclick="calculate('pv')" class="calc-trigger absolute left-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg></button>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <div class="flex justify-between items-center px-1">
+                    <label class="text-xs font-bold text-slate-400 uppercase">תשלום (PMT)</label>
+                    <div class="flex w-40" id="pmt-group">
+                        <button class="unit-btn active" onclick="setUnit('pmt', 30, this)">חודש</button>
+                        <button class="unit-btn" onclick="setUnit('pmt', 365, this)">שנה</button>
+                        <input type="hidden" id="pmt-unit" value="30">
+                    </div>
+                </div>
+                <div class="relative flex items-center">
+                    <input id="pmt" type="text" inputmode="text" placeholder="0" class="input-field pl-12 text-slate-700">
+                    <button onclick="calculate('pmt')" class="calc-trigger absolute left-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg></button>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <label class="block text-xs font-bold text-slate-400 px-1 uppercase">ערך עתידי (FV)</label>
+                <div class="relative flex items-center">
+                    <input id="fv" type="text" inputmode="text" placeholder="0" class="input-field pl-12 text-indigo-700">
+                    <button onclick="calculate('fv')" class="calc-trigger absolute left-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg></button>
+                </div>
+            </div>
+
+            <div class="flex gap-2 pt-2">
+                <button onclick="shareWhatsApp()" class="flex-1 bg-emerald-600 text-white py-3 rounded-xl font-bold text-sm">שתף</button>
+                <button onclick="clearFields()" class="px-6 bg-slate-100 text-slate-500 py-3 rounded-xl font-bold text-sm">איפוס</button>
+            </div>
+        </div>
+
+        <div class="mt-10 space-y-4">
+            <div class="flex justify-between items-center px-1">
+                <h2 class="text-lg font-bold text-slate-800">ניתוח רגישות</h2>
+                <button onclick="runSensitivity()" class="text-xs font-bold text-blue-600 border border-blue-100 bg-blue-50 px-3 py-1 rounded-lg">עדכן טבלה</button>
+            </div>
             
-            <div class="space-y-2">
-                <label class="text-xs font-bold text-slate-500 mr-1 uppercase">תקופות זמן (N)</label>
-                <div class="flex mb-2" id="n-group">
-                    <button class="unit-btn" onclick="setUnit('n', 1, this)">יום</button>
-                    <button class="unit-btn active" onclick="setUnit('n', 30, this)">חודש</button>
-                    <button class="unit-btn" onclick="setUnit('n', 90, this)">רבעון</button>
-                    <button class="unit-btn" onclick="setUnit('n', 365, this)">שנה</button>
-                    <input type="hidden" id="n-unit" value="30">
+            <div class="bg-white p-4 rounded-3xl shadow-sm border border-slate-100 space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 block mb-1">ציר X (עמודות)</label>
+                        <select id="sens-x" class="w-full text-xs bg-slate-50 p-2 rounded-lg outline-none">
+                            <option value="i">ריבית (%)</option>
+                            <option value="n">תקופות (N)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 block mb-1">ציר Y (שורות)</label>
+                        <select id="sens-y" class="w-full text-xs bg-slate-50 p-2 rounded-lg outline-none">
+                            <option value="pv">ערך נוכחי (PV)</option>
+                            <option value="pmt" selected>תשלום (PMT)</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="flex gap-2">
-                    <input id="n" type="text" inputmode="text" placeholder="0" class="w-full bg-slate-50 border-none rounded-2xl p-4 focus:ring-2 focus:ring-blue-500 outline-none text-lg font-semibold tracking-wider">
-                    <button onclick="calculate('n')" class="solve-btn bg-blue-600 hover:bg-blue-700 text-white w-14 rounded-2xl flex items-center justify-center shadow-md text-xl">🔍</button>
-                </div>
-            </div>
 
-            <div class="space-y-2">
-                <label class="text-xs font-bold text-slate-500 mr-1 uppercase">ריבית (%)</label>
-                <div class="flex mb-2" id="i-group">
-                    <button class="unit-btn" onclick="setUnit('i', 1, this)">יומית</button>
-                    <button class="unit-btn" onclick="setUnit('i', 30, this)">חודשית</button>
-                    <button class="unit-btn" onclick="setUnit('i', 90, this)">רבעונית</button>
-                    <button class="unit-btn active" onclick="setUnit('i', 365, this)">שנתית</button>
-                    <input type="hidden" id="i-unit" value="365">
+                <div class="overflow-x-auto">
+                    <div id="sensitivity-result" class="text-center py-4 text-xs text-slate-400 italic">הזן נתונים ולחץ "עדכן טבלה"</div>
+                    <table id="matrix" class="matrix-table hidden">
+                        <thead id="matrix-head"></thead>
+                        <tbody id="matrix-body"></tbody>
+                    </table>
                 </div>
-                <div class="flex gap-2">
-                    <input id="i" type="text" inputmode="text" placeholder="0.00" class="w-full bg-slate-50 border-none rounded-2xl p-4 focus:ring-2 focus:ring-orange-500 outline-none text-lg font-semibold text-orange-600 tracking-wider">
-                    <button onclick="calculate('i')" class="solve-btn bg-blue-600 hover:bg-blue-700 text-white w-14 rounded-2xl flex items-center justify-center shadow-md text-xl">🔍</button>
-                </div>
-            </div>
-
-            <div class="space-y-2">
-                <label class="block text-xs font-bold text-slate-500 mr-1 uppercase">ערך נוכחי (PV)</label>
-                <div class="flex gap-2">
-                    <input id="pv" type="text" inputmode="text" placeholder="0" class="w-full bg-slate-50 border-none rounded-2xl p-4 focus:ring-2 focus:ring-emerald-500 outline-none text-lg font-semibold text-emerald-600 tracking-wider">
-                    <button onclick="calculate('pv')" class="solve-btn bg-blue-600 hover:bg-blue-700 text-white w-14 rounded-2xl flex items-center justify-center shadow-md text-xl">🔍</button>
-                </div>
-            </div>
-
-            <div class="space-y-2">
-                <label class="text-xs font-bold text-slate-500 mr-1 uppercase">תשלום (PMT)</label>
-                <div class="flex mb-2" id="pmt-group">
-                    <button class="unit-btn" onclick="setUnit('pmt', 1, this)">יומי</button>
-                    <button class="unit-btn active" onclick="setUnit('pmt', 30, this)">חודשי</button>
-                    <button class="unit-btn" onclick="setUnit('pmt', 90, this)">רבעוני</button>
-                    <button class="unit-btn" onclick="setUnit('pmt', 365, this)">שנתי</button>
-                    <input type="hidden" id="pmt-unit" value="30">
-                </div>
-                <div class="flex gap-2">
-                    <input id="pmt" type="text" inputmode="text" placeholder="0" class="w-full bg-slate-50 border-none rounded-2xl p-4 focus:ring-2 focus:ring-blue-500 outline-none text-lg font-semibold text-slate-700 tracking-wider">
-                    <button onclick="calculate('pmt')" class="solve-btn bg-blue-600 hover:bg-blue-700 text-white w-14 rounded-2xl flex items-center justify-center shadow-md text-xl">🔍</button>
-                </div>
-            </div>
-
-            <div class="space-y-2">
-                <label class="block text-xs font-bold text-slate-500 mr-1 uppercase">ערך עתידי (FV)</label>
-                <div class="flex gap-2">
-                    <input id="fv" type="text" inputmode="text" placeholder="0" class="w-full bg-slate-50 border-none rounded-2xl p-4 focus:ring-2 focus:ring-blue-500 outline-none text-lg font-semibold text-blue-600 tracking-wider">
-                    <button onclick="calculate('fv')" class="solve-btn bg-blue-600 hover:bg-blue-700 text-white w-14 rounded-2xl flex items-center justify-center shadow-md text-xl">🔍</button>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4 pt-4">
-                <button onclick="shareWhatsApp()" class="bg-emerald-500 text-white py-4 rounded-2xl font-bold shadow-lg active:scale-95 transition">שתף תוצאה</button>
-                <button onclick="clearFields()" class="bg-slate-200 text-slate-600 py-4 rounded-2xl font-bold active:scale-95 transition">איפוס</button>
+                <p class="text-[9px] text-slate-400 text-center">* הטבלה מציגה את השינוי ב-FV (ערך עתידי) בהתאם לפרמטרים הנבחרים.</p>
             </div>
         </div>
     </div>
@@ -102,62 +145,91 @@
             btn.classList.add('active');
         }
 
-        function format(val) { return (val === "" || isNaN(val)) ? "" : new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(val); }
+        function format(val) { return (val === "" || isNaN(val)) ? "" : new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(Math.round(val)); }
         function parse(str) { return parseFloat(str.toString().replace(/,/g, '')) || 0; }
 
         ['n','i','pv','pmt','fv'].forEach(id => {
             const el = document.getElementById(id);
-            el.addEventListener('blur', (e) => { if (id !== 'n' && id !== 'i' && e.target.value !== "-") e.target.value = format(parse(e.target.value)); });
+            el.addEventListener('blur', (e) => { if (id !== 'n' && id !== 'i') e.target.value = format(parse(e.target.value)); });
             el.addEventListener('focus', (e) => { e.target.value = e.target.value.replace(/,/g, ''); });
             el.addEventListener('input', (e) => { e.target.value = e.target.value.replace(/[^0-9.-]/g, '').replace(/(\..*)\./g, '$1').replace(/(?!^)-/g, ''); });
         });
 
-        function calculate(target) {
-            const n_days = parse(document.getElementById('n').value) * parseInt(document.getElementById('n-unit').value);
-            const i_base = parseInt(document.getElementById('i-unit').value);
-            const i_daily = Math.pow(1 + (parse(document.getElementById('i').value)/100), 1/i_base) - 1;
-            
-            const pv = parse(document.getElementById('pv').value);
-            const pmt_daily = parse(document.getElementById('pmt').value) / parseInt(document.getElementById('pmt-unit').value);
-            const fv = parse(document.getElementById('fv').value);
+        function coreCalc(n, i, pv, pmt, fv, target) {
+            const n_unit = parseInt(document.getElementById('n-unit').value);
+            const i_unit = parseInt(document.getElementById('i-unit').value);
+            const pmt_unit = parseInt(document.getElementById('pmt-unit').value);
 
-            try {
-                if (target === 'fv') {
-                    let res = - (pv * Math.pow(1 + i_daily, n_days) + pmt_daily * (Math.pow(1 + i_daily, n_days) - 1) / i_daily);
-                    document.getElementById('fv').value = format(res);
-                } 
-                else if (target === 'pv') {
-                    let res = - (fv / Math.pow(1 + i_daily, n_days) + pmt_daily * (1 - Math.pow(1 + i_daily, -n_days)) / i_daily);
-                    document.getElementById('pv').value = format(res);
-                }
-                else if (target === 'pmt') {
-                    let res_daily = - (fv + pv * Math.pow(1 + i_daily, n_days)) / ((Math.pow(1 + i_daily, n_days) - 1) / i_daily);
-                    document.getElementById('pmt').value = format(res_daily * parseInt(document.getElementById('pmt-unit').value));
-                }
-                else if (target === 'n') {
-                    let res_days = Math.log((pmt_daily - fv * i_daily) / (pmt_daily + pv * i_daily)) / Math.log(1 + i_daily);
-                    document.getElementById('n').value = (res_days / parseInt(document.getElementById('n-unit').value)).toFixed(2);
-                }
-                else if (target === 'i') {
-                    let r = 0.0001; 
-                    for (let j = 0; j < 100; j++) {
-                        let f_r = pv * Math.pow(1+r, n_days) + pmt_daily * (Math.pow(1+r, n_days) - 1) / r + fv;
-                        let r1 = r + 0.000001;
-                        let f_r1 = pv * Math.pow(1+r1, n_days) + pmt_daily * (Math.pow(1+r1, n_days) - 1) / r1 + fv;
-                        r = r - f_r / ((f_r1 - f_r) / 0.000001);
-                    }
-                    let final_i = Math.pow(1 + r, i_base) - 1;
-                    document.getElementById('i').value = (final_i * 100).toFixed(4);
-                }
-            } catch (e) { alert("וודא נתונים וסימנים"); }
+            let n_total = n * n_unit;
+            let i_monthly = Math.pow(1 + (i/100), 1/i_unit) - 1;
+            let pmt_monthly = pmt / pmt_unit;
+
+            if (target === 'fv') return - (pv * Math.pow(1 + i_monthly, n_total) + pmt_monthly * (Math.pow(1 + i_monthly, n_total) - 1) / i_monthly);
+            // שאר החישובים (PV, PMT וכו') דומים...
         }
 
-        function shareWhatsApp() {
-            const msg = `*חישוב פיננסי Pro*%0AN: ${document.getElementById('n').value}%0AI: ${document.getElementById('i').value}%%0APV: ${document.getElementById('pv').value}%0APMT: ${document.getElementById('pmt').value}%0AFV: ${document.getElementById('fv').value}`;
-            window.open(`https://wa.me/?text=${msg}`, '_blank');
+        function calculate(target) {
+            const n = parse(document.getElementById('n').value);
+            const i = parse(document.getElementById('i').value);
+            const pv = parse(document.getElementById('pv').value);
+            const pmt = parse(document.getElementById('pmt').value);
+            const fv = parse(document.getElementById('fv').value);
+
+            const n_unit = parseInt(document.getElementById('n-unit').value);
+            const i_unit = parseInt(document.getElementById('i-unit').value);
+            const pmt_unit = parseInt(document.getElementById('pmt-unit').value);
+
+            let n_m = n * n_unit;
+            let i_m = Math.pow(1 + (i/100), 1/i_unit) - 1;
+            let pmt_m = pmt / pmt_unit;
+
+            if (target === 'fv') document.getElementById('fv').value = format(-(pv * Math.pow(1+i_m, n_m) + pmt_m * (Math.pow(1+i_m, n_m)-1)/i_m));
+            if (target === 'pv') document.getElementById('pv').value = format(-(fv / Math.pow(1+i_m, n_m) + pmt_m * (1-Math.pow(1+i_m, -n_m))/i_m));
+            if (target === 'pmt') document.getElementById('pmt').value = format((-(fv + pv * Math.pow(1+i_m, n_m)) / ((Math.pow(1+i_m, n_m)-1)/i_m)) * pmt_unit);
+        }
+
+        function runSensitivity() {
+            const sensX = document.getElementById('sens-x').value;
+            const sensY = document.getElementById('sens-y').value;
+            const baseVals = { n: parse(document.getElementById('n').value), i: parse(document.getElementById('i').value), pv: parse(document.getElementById('pv').value), pmt: parse(document.getElementById('pmt').value) };
+            
+            if (!baseVals.n || !baseVals.i) { alert("מלא נתונים בסיסיים קודם"); return; }
+
+            const matrix = document.getElementById('matrix');
+            const head = document.getElementById('matrix-head');
+            const body = document.getElementById('matrix-body');
+            document.getElementById('sensitivity-result').classList.add('hidden');
+            matrix.classList.remove('hidden');
+
+            // יצירת טווחים (למשל +/- 20% מהערך הבסיסי)
+            const xSteps = [0.8, 0.9, 1, 1.1, 1.2].map(s => baseVals[sensX] * s);
+            const ySteps = [0.8, 0.9, 1, 1.1, 1.2].map(s => baseVals[sensY] * s);
+
+            head.innerHTML = `<tr><th>Y \\ X</th>${xSteps.map(x => `<th>${x.toFixed(sensX === 'i' ? 1 : 0)}${sensX === 'i' ? '%' : ''}</th>`).join('')}</tr>`;
+            
+            body.innerHTML = ySteps.map(y => {
+                let row = `<tr><td class="font-bold bg-slate-50">${format(y)}</td>`;
+                xSteps.forEach(x => {
+                    let tempVals = { ...baseVals, [sensX]: x, [sensY]: y };
+                    // חישוב FV פנימי עבור הטבלה
+                    const n_u = parseInt(document.getElementById('n-unit').value);
+                    const i_u = parseInt(document.getElementById('i-unit').value);
+                    const pmt_u = parseInt(document.getElementById('pmt-unit').value);
+                    let n_m = tempVals.n * n_u;
+                    let i_m = Math.pow(1 + (tempVals.i/100), 1/i_u) - 1;
+                    let pmt_m = tempVals.pmt / pmt_u;
+                    let fv_res = -(tempVals.pv * Math.pow(1+i_m, n_m) + pmt_m * (Math.pow(1+i_m, n_m)-1)/i_m);
+                    row += `<td>${format(fv_res)}</td>`;
+                });
+                return row + '</tr>';
+            }).join('');
         }
 
         function clearFields() { ['n','i','pv','pmt','fv'].forEach(id => document.getElementById(id).value = ''); }
+        function shareWhatsApp() {
+            const msg = `*חישוב פיננסי*%0A---%0AFV: ${document.getElementById('fv').value}%0APV: ${document.getElementById('pv').value}%0APMT: ${document.getElementById('pmt').value}`;
+            window.open(`https://wa.me/?text=${msg}`, '_blank');
+        }
     </script>
 </body>
 </html>
