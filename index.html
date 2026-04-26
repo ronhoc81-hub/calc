@@ -3,36 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>מחשבון פיננסי Pro</title>
+    <title>מחשבון פיננסי Pro Multi-Period</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Assistant', sans-serif; -webkit-tap-highlight-color: transparent; }
         .solve-btn { transition: all 0.2s ease; }
         .solve-btn:active { transform: scale(0.95); }
-        /* מונע בחירה של טקסט בטעות בלחיצה מהירה */
-        input { font-variant-numeric: tabular-nums; }
+        .period-select { font-size: 10px; padding: 2px 4px; border-radius: 6px; background: #f1f5f9; border: 1px solid #e2e8f0; color: #64748b; outline: none; }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen pb-10">
 
     <div class="bg-slate-900 text-white p-6 text-center shadow-lg mb-4">
         <h1 class="text-2xl font-extrabold tracking-tight italic">מחשבון פיננסי <span class="text-blue-400">PRO</span></h1>
-        
-        <div class="mt-4 flex justify-center gap-2">
-            <select id="period-type" onchange="updateLabels()" class="bg-slate-800 text-white text-sm rounded-lg px-3 py-1 border border-slate-700 outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="חודשים">חישוב חודשי</option>
-                <option value="רבעונים">חישוב רבעוני</option>
-                <option value="שנים">חישוב שנתי</option>
-            </select>
-        </div>
+        <p class="text-[10px] text-slate-400 uppercase tracking-[0.2em] mt-1">Multi-Period Solver</p>
     </div>
 
     <div class="max-w-md mx-auto px-4">
-        <div class="bg-white rounded-3xl shadow-xl p-6 space-y-4 border border-slate-100">
+        <div class="bg-white rounded-3xl shadow-xl p-6 space-y-5 border border-slate-100">
             
             <div class="relative">
-                <label id="label-n" class="block text-xs font-bold text-slate-500 mb-1 mr-1 uppercase">מספר חודשים (N)</label>
+                <div class="flex justify-between items-end mb-1">
+                    <label class="text-xs font-bold text-slate-500 mr-1">מספר תקופות (N)</label>
+                    <select id="n-unit" class="period-select">
+                        <option value="1">ימים</option>
+                        <option value="30" selected>חודשים</option>
+                        <option value="90">רבעונים</option>
+                        <option value="365">שנים</option>
+                    </select>
+                </div>
                 <div class="flex gap-2">
                     <input id="n" type="text" inputmode="text" placeholder="0" class="w-full bg-slate-50 border-none rounded-2xl p-4 focus:ring-2 focus:ring-blue-500 outline-none text-lg font-semibold transition tracking-wider">
                     <button onclick="calculate('n')" class="solve-btn bg-blue-600 hover:bg-blue-700 text-white w-14 rounded-2xl flex items-center justify-center shadow-md text-xl">🔍</button>
@@ -40,7 +40,15 @@
             </div>
 
             <div class="relative">
-                <label id="label-i" class="block text-xs font-bold text-slate-500 mb-1 mr-1 uppercase">ריבית חודשית (%)</label>
+                <div class="flex justify-between items-end mb-1">
+                    <label class="text-xs font-bold text-slate-500 mr-1">ריבית (%)</label>
+                    <select id="i-unit" class="period-select">
+                        <option value="1">יומית</option>
+                        <option value="30" selected>חודשית</option>
+                        <option value="90">רבעונית</option>
+                        <option value="365">שנתית</option>
+                    </select>
+                </div>
                 <div class="flex gap-2">
                     <input id="i" type="text" inputmode="text" placeholder="0.00" class="w-full bg-slate-50 border-none rounded-2xl p-4 focus:ring-2 focus:ring-blue-500 outline-none text-lg font-semibold transition text-orange-600 tracking-wider">
                     <button onclick="calculate('i')" class="solve-btn bg-blue-600 hover:bg-blue-700 text-white w-14 rounded-2xl flex items-center justify-center shadow-md text-xl">🔍</button>
@@ -48,7 +56,7 @@
             </div>
 
             <div class="relative">
-                <label class="block text-xs font-bold text-slate-500 mb-1 mr-1 uppercase">ערך נוכחי (PV)</label>
+                <label class="block text-xs font-bold text-slate-500 mb-1 mr-1">ערך נוכחי (PV)</label>
                 <div class="flex gap-2">
                     <input id="pv" type="text" inputmode="text" placeholder="0" class="w-full bg-slate-50 border-none rounded-2xl p-4 focus:ring-2 focus:ring-blue-500 outline-none text-lg font-semibold transition text-emerald-600 tracking-wider">
                     <button onclick="calculate('pv')" class="solve-btn bg-blue-600 hover:bg-blue-700 text-white w-14 rounded-2xl flex items-center justify-center shadow-md text-xl">🔍</button>
@@ -56,7 +64,15 @@
             </div>
 
             <div class="relative">
-                <label id="label-pmt" class="block text-xs font-bold text-slate-500 mb-1 mr-1 uppercase">תשלום חודשי (PMT)</label>
+                <div class="flex justify-between items-end mb-1">
+                    <label class="text-xs font-bold text-slate-500 mr-1">תשלום (PMT)</label>
+                    <select id="pmt-unit" class="period-select">
+                        <option value="1">יומי</option>
+                        <option value="30" selected>חודשי</option>
+                        <option value="90">רבעוני</option>
+                        <option value="365">שנתי</option>
+                    </select>
+                </div>
                 <div class="flex gap-2">
                     <input id="pmt" type="text" inputmode="text" placeholder="0" class="w-full bg-slate-50 border-none rounded-2xl p-4 focus:ring-2 focus:ring-blue-500 outline-none text-lg font-semibold transition text-slate-700 tracking-wider">
                     <button onclick="calculate('pmt')" class="solve-btn bg-blue-600 hover:bg-blue-700 text-white w-14 rounded-2xl flex items-center justify-center shadow-md text-xl">🔍</button>
@@ -72,34 +88,18 @@
             </div>
 
             <div class="grid grid-cols-2 gap-3 pt-2">
-                <button onclick="shareWhatsApp()" class="bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-2xl font-bold text-sm shadow-md transition flex items-center justify-center gap-1">
-                    <span>שתף בוואטסאפ</span>
-                </button>
-                <button onclick="window.print()" class="bg-slate-700 hover:bg-slate-800 text-white py-3 rounded-2xl font-bold text-sm shadow-md transition">PDF / הדפסה</button>
+                <button onclick="shareWhatsApp()" class="bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-2xl font-bold text-sm shadow-md transition">שתף בוואטסאפ</button>
+                <button onclick="window.print()" class="bg-slate-700 hover:bg-slate-800 text-white py-3 rounded-2xl font-bold text-sm shadow-md transition">PDF</button>
             </div>
             
-            <button onclick="clearFields()" class="w-full text-slate-400 py-2 text-[10px] uppercase font-bold tracking-widest mt-2 border border-slate-100 rounded-xl">איפוס נתונים</button>
+            <button onclick="clearFields()" class="w-full text-slate-300 py-2 text-[9px] uppercase font-bold tracking-widest mt-2">איפוס נתונים</button>
         </div>
-        
-        <p class="text-center text-[10px] text-slate-400 mt-4 leading-tight italic">
-            * הערה: הזן מספרים חיוביים ושליליים בהתאם לכיוון התזרים.<br>
-            (לדוגמה: הלוואה בסימן +, החזרים בסימן -)
-        </p>
     </div>
 
     <script>
-        function updateLabels() {
-            const type = document.getElementById('period-type').value;
-            const singular = type === 'חודשים' ? 'חודשי' : (type === 'רבעונים' ? 'רבעוני' : 'שנתי');
-            const term = type === 'חודשים' ? 'חודשים' : (type === 'רבעונים' ? 'רבעונים' : 'שנים');
-            document.getElementById('label-n').innerText = `מספר ${term} (N)`;
-            document.getElementById('label-i').innerText = `ריבית ${singular} (%)`;
-            document.getElementById('label-pmt').innerText = `תשלום ${singular} (PMT)`;
-        }
-
         function formatNumber(val) {
             if (val === "" || isNaN(val)) return "";
-            return new Intl.NumberFormat('en-US', { maximumFractionDigits: 2, minimumFractionDigits: 0 }).format(val);
+            return new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(val);
         }
 
         function parseNumber(str) {
@@ -107,75 +107,83 @@
             return parseFloat(str.toString().replace(/,/g, '')) || 0;
         }
 
-        // הגדרת מאזינים המאפשרים מינוס ופסיקים
+        // נירמול הנתונים ליחידה אחת (ימים) כדי לבצע חישוב הלימה
+        function getNormalizedData() {
+            const n_raw = parseNumber(document.getElementById('n').value);
+            const i_raw = parseNumber(document.getElementById('i').value) / 100;
+            const pmt_raw = parseNumber(document.getElementById('pmt').value);
+            
+            const n_days = n_raw * parseInt(document.getElementById('n-unit').value);
+            const pmt_days = pmt_raw / parseInt(document.getElementById('pmt-unit').value);
+            
+            // המרת ריבית ליומית אפקטיבית
+            const i_base_period = parseInt(document.getElementById('i-unit').value);
+            const i_daily = Math.pow(1 + i_raw, 1 / i_base_period) - 1;
+
+            return {
+                n: n_days,
+                i: i_daily,
+                pv: parseNumber(document.getElementById('pv').value),
+                pmt: pmt_days,
+                fv: parseNumber(document.getElementById('fv').value)
+            };
+        }
+
+        // פונקציות עיצוב קלט
         ['n','i','pv','pmt','fv'].forEach(id => {
             const el = document.getElementById(id);
-            
-            // בעת יציאה מהשדה - מעצבים עם פסיקים
             el.addEventListener('blur', (e) => {
-                const raw = e.target.value;
-                if (raw === "-" || raw === "") return;
-                const val = parseNumber(raw);
-                if (id !== 'i' && id !== 'n') e.target.value = formatNumber(val);
+                const val = parseNumber(e.target.value);
+                if (e.target.value !== "-" && id !== 'n' && id !== 'i') e.target.value = formatNumber(val);
             });
-
-            // בעת כניסה לשדה - מנקים פסיקים כדי לאפשר עריכה
-            el.addEventListener('focus', (e) => {
-                e.target.value = e.target.value.replace(/,/g, '');
-            });
-
-            // חסימת תווים לא רלוונטיים (מאפשר רק מספרים, נקודה ומינוס)
+            el.addEventListener('focus', (e) => { e.target.value = e.target.value.replace(/,/g, ''); });
             el.addEventListener('input', (e) => {
                 let val = e.target.value;
-                // מאפשר רק מינוס אחד בהתחלה, נקודה אחת, ומספרים
                 e.target.value = val.replace(/[^0-9.-]/g, '').replace(/(\..*)\./g, '$1').replace(/(?!^)-/g, '');
             });
         });
 
         function calculate(target) {
-            const n = parseNumber(document.getElementById('n').value);
-            const i = parseNumber(document.getElementById('i').value) / 100;
-            const pv = parseNumber(document.getElementById('pv').value);
-            const pmt = parseNumber(document.getElementById('pmt').value);
-            const fv = parseNumber(document.getElementById('fv').value);
+            const data = getNormalizedData();
+            const { n, i, pv, pmt, fv } = data;
+            let res;
 
             try {
                 if (target === 'fv') {
-                    let res = - (pv * Math.pow(1 + i, n) + pmt * (Math.pow(1 + i, n) - 1) / i);
-                    if (i === 0) res = -(pv + pmt * n);
+                    res = - (pv * Math.pow(1 + i, n) + pmt * (Math.pow(1 + i, n) - 1) / i);
                     document.getElementById('fv').value = formatNumber(res);
                 } 
                 else if (target === 'pv') {
-                    let res = - (fv / Math.pow(1 + i, n) + pmt * (1 - Math.pow(1 + i, -n)) / i);
-                    if (i === 0) res = -(fv + pmt * n);
+                    res = - (fv / Math.pow(1 + i, n) + pmt * (1 - Math.pow(1 + i, -n)) / i);
                     document.getElementById('pv').value = formatNumber(res);
                 }
                 else if (target === 'pmt') {
-                    let res = - (fv + pv * Math.pow(1 + i, n)) / ((Math.pow(1 + i, n) - 1) / i);
-                    if (i === 0) res = -(fv + pv) / n;
-                    document.getElementById('pmt').value = formatNumber(res);
+                    res = - (fv + pv * Math.pow(1 + i, n)) / ((Math.pow(1 + i, n) - 1) / i);
+                    const pmt_unit = parseInt(document.getElementById('pmt-unit').value);
+                    document.getElementById('pmt').value = formatNumber(res * pmt_unit);
                 }
                 else if (target === 'n') {
-                    let res = Math.log((pmt - fv * i) / (pmt + pv * i)) / Math.log(1 + i);
-                    document.getElementById('n').value = res.toFixed(2);
+                    res = Math.log((pmt - fv * i) / (pmt + pv * i)) / Math.log(1 + i);
+                    const n_unit = parseInt(document.getElementById('n-unit').value);
+                    document.getElementById('n').value = (res / n_unit).toFixed(2);
                 }
                 else if (target === 'i') {
-                    let r = 0.1; 
+                    let r = 0.0001; // ניחוש יומי
                     for (let j = 0; j < 100; j++) {
-                        let r1 = r + 0.00001;
                         let f_r = pv * Math.pow(1+r, n) + pmt * (Math.pow(1+r, n) - 1) / r + fv;
+                        let r1 = r + 0.000001;
                         let f_r1 = pv * Math.pow(1+r1, n) + pmt * (Math.pow(1+r1, n) - 1) / r1 + fv;
-                        let derivative = (f_r1 - f_r) / 0.00001;
-                        r = r - f_r / derivative;
+                        r = r - f_r / ((f_r1 - f_r) / 0.000001);
                     }
-                    document.getElementById('i').value = (r * 100).toFixed(4);
+                    const i_unit = parseInt(document.getElementById('i-unit').value);
+                    const final_i = Math.pow(1 + r, i_unit) - 1;
+                    document.getElementById('i').value = (final_i * 100).toFixed(4);
                 }
-            } catch (e) { alert("וודא שהנתונים תקינים"); }
+            } catch (e) { alert("שגיאה בחישוב. וודא שהנתונים הגיוניים."); }
         }
 
         function shareWhatsApp() {
-            const type = document.getElementById('period-type').value;
-            const msg = `*סיכום חישוב פיננסי (${type})*%0A-----------------%0Aתקופות: ${document.getElementById('n').value}%0Aריבית: ${document.getElementById('i').value}%%0Aערך נוכחי: ${document.getElementById('pv').value}%0Aתשלום: ${document.getElementById('pmt').value}%0Aערך עתידי: ${document.getElementById('fv').value}`;
+            const msg = `*חישוב פיננסי*%0AN: ${document.getElementById('n').value} (%23${document.getElementById('n-unit').selectedOptions[0].text})%0AI: ${document.getElementById('i').value}% (%23${document.getElementById('i-unit').selectedOptions[0].text})%0APV: ${document.getElementById('pv').value}%0APMT: ${document.getElementById('pmt').value} (%23${document.getElementById('pmt-unit').selectedOptions[0].text})%0AFV: ${document.getElementById('fv').value}`;
             window.open(`https://wa.me/?text=${msg}`, '_blank');
         }
 
